@@ -13,6 +13,16 @@ class AuthRepository {
 		return user;
 	}
 
+	findUserById = async (id) => {
+		const user = await this.prisma.user.findUnique({
+			where: {
+				id
+			}
+		});
+		user.password = undefined;
+		return user;
+	}
+
 	createUser = async (email, password, name) => {
 		const user = await this.prisma.user.create({
 			data: {
@@ -24,6 +34,8 @@ class AuthRepository {
 
 		return user;
 	}
+
+
 }
 
 export { AuthRepository };
