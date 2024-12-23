@@ -6,8 +6,8 @@ import { ResumeController } from '../controllers/resumes.controller.js';
 import { ResumeService } from '../services/resumes.service.js';
 import { ResumeRepository } from '../repositories/resumes.repository.js';
 
-const prismaClient = prisma;
-const resumeRepository = new ResumeRepository(prismaClient);
+
+const resumeRepository = new ResumeRepository(prisma);
 const resumeService = new ResumeService(resumeRepository);
 const resumeController = new ResumeController(resumeService);
 const resumesRouter = express.Router();

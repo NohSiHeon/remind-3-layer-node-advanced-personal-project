@@ -1,4 +1,4 @@
-class ResumeRepository {
+class ResumesRepository {
 	constructor(prisma) {
 		this.prisma = prisma;
 	}
@@ -16,13 +16,25 @@ class ResumeRepository {
 	}
 
 	findResumes = async (authorId, sort) => {
-		const resumes = await this.prisma.resume.findMany({
+		let resumes = await this.prisma.resume.findMany({
 			where: { authorId },
 			orderBy: {
 				createdAt: sort,
 			},
 			include: {
 				author: true
+			}
+		});
+
+		resumes = resumes.map((resume) => {
+			return {
+				id: resume.id,
+				authorName: resume.author.name,
+				title: resume.title,
+				content: resume.content,
+				status: resume.status,
+				createdAt: resume.createdAt,
+				updatedAt: resume.updatedAt
 			}
 		});
 
@@ -79,4 +91,4 @@ class ResumeRepository {
 	}
 }
 
-export { ResumeRepository };
+export { ResumesRepository };
