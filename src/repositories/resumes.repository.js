@@ -26,18 +26,6 @@ class ResumesRepository {
 			}
 		});
 
-		resumes = resumes.map((resume) => {
-			return {
-				id: resume.id,
-				authorName: resume.author.name,
-				title: resume.title,
-				content: resume.content,
-				status: resume.status,
-				createdAt: resume.createdAt,
-				updatedAt: resume.updatedAt
-			}
-		});
-
 		return resumes;
 	}
 
@@ -57,7 +45,7 @@ class ResumesRepository {
 		const resume = await this.prisma.resume.findUnique({
 			where: {
 				id: +id,
-				authorId
+				authorId: +authorId
 			}
 		});
 

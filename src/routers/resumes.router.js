@@ -4,10 +4,10 @@ import { prisma } from '../utils/prisma.util.js';
 import { updateResumeValidator } from '../middlewares/validators/update-resume-validator.middleware.js';
 import { ResumeController } from '../controllers/resumes.controller.js';
 import { ResumeService } from '../services/resumes.service.js';
-import { ResumeRepository } from '../repositories/resumes.repository.js';
+import { ResumesRepository } from '../repositories/resumes.repository.js';
 
 
-const resumeRepository = new ResumeRepository(prisma);
+const resumeRepository = new ResumesRepository(prisma);
 const resumeService = new ResumeService(resumeRepository);
 const resumeController = new ResumeController(resumeService);
 const resumesRouter = express.Router();

@@ -5,7 +5,7 @@ import { ACCESS_TOKEN_SECRET } from '../constants/env.constant.js';
 import { prisma } from '../utils/prisma.util.js';
 import { AuthRepository } from '../repositories/auth.repository.js';
 
-const authRepository = new AuthRepository();
+const authRepository = new AuthRepository(prisma);
 export const requireAccessToken = async (req, res, next) => {
 	try {
 		// 인증 정보 파싱

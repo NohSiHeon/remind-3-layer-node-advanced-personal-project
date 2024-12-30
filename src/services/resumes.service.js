@@ -68,7 +68,7 @@ class ResumeService {
 	}
 
 	deleteResume = async (authorId, id) => {
-		const existedResume = await this.resumeRepository.findResumeByIdAndAuthorId(authorId, id);
+		const existedResume = await this.resumeRepository.findResumeByIdAndAuthorId(id, authorId);
 
 		if (!existedResume) {
 			throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
