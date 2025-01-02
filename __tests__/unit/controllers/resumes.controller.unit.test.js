@@ -1,13 +1,18 @@
 import { jest, describe, test, expect, beforeEach } from '@jest/globals';
-import { ResumesController } from '../../../src/controllers/resumes.controller.js';
+import { ResumeController } from '../../../src/controllers/resumes.controller.js';
+import { dummyUsers } from '../../dummies/users.dummy.js';
+import { dummyResumes } from '../../dummies/resumes.dummy.js';
+import { RESUME_STATUS } from '../../../src/constants/resume.constant.js';
+import { HTTP_STATUS } from '../../../src/constants/http-status.constant.js';
+import { MESSAGES } from '../../../src/constants/message.constant.js';
 
 
 const mockResumesService = {
-	create: jest.fn(),
-	readMany: jest.fn(),
-	readOne: jest.fn(),
-	update: jest.fn(),
-	delete: jest.fn(),
+	createResume: jest.fn(),
+	getResumes: jest.fn(),
+	getResume: jest.fn(),
+	updateResume: jest.fn(),
+	deleteResume: jest.fn(),
 };
 
 const mockRequest = {
@@ -24,7 +29,7 @@ const mockResponse = {
 
 const mockNext = jest.fn();
 
-const resumesController = new ResumesController(mockResumesService);
+const resumesController = new ResumeController(mockResumesService);
 
 describe('ResumesController Unit Test', () => {
 	beforeEach(() => {
@@ -36,20 +41,123 @@ describe('ResumesController Unit Test', () => {
 
 	test('create Method', async () => {
 		// GIVEN
+		const mockUser = dummyUsers[1];
+		const authorId = dummyUsers[1].id;
+		const { title, content } = dummyResumes[0];
+		const mockBody = { title, content };
+		const mockReturn = {
+			id: 100,
+			authorId,
+			title,
+			content,
+			status: RESUME_STATUS.APPLY,
+			createdAt: new Date(),
+			updatedAt: new Date()
+		};
+
+		mockRequest.user = mockUser;
+		mockRequest.body = mockBody;
+		mockResumesService.createResume.mockReturnValue(mockReturn);
+
 		// WHEN
+		await resumesController.createResume(mockRequest, mockResponse, mockNext);
 		// THEN
+		const expectedJsonCalledWith = {
+			status: HTTP_STATUS.CREATED,
+			message: MESSAGES.RESUMES.CREATE.SUCCEED,
+			data: mockReturn
+		};
+
+		expect(mockResumesService.createResume).toHaveBeenCalledTimes(1);
+		expect(mockResumesService.createResume).toHaveBeenCalledWith(title, content, authorId);
+
+		expect(mockResponse.status).toHaveBeenCalledTimes(1);
+		expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.CREATED);
+
+		expect(mockResponse.json).toHaveBeenCalledTimes(1);
+		expect(mockResponse.json).toHaveBeenCalledWith(expectedJsonCalledWith);
 	});
 
 	test('readMany Method', async () => {
 		// GIVEN
+		const authorId = dummyUsers[1].id;
+		const sort = 'desc';
+		const mockUser = dummyUsers[1];
+		const mockQuery = sort;
+		let mockReturn = dummyResumes.filter((resume) => resume.authorId == authorId).sort((a, b) => b.createdAt - a.createdAt).map((resume) => {
+			return {
+				id: resume.id,
+				authorName: resume.author.name,
+				title: resume.title,
+				content: resume.content,
+				status: resume.status,
+				createdAt: resume.createdAt,
+				updatedAt: resume.updatedAt
+			}
+		});
+
+		mockRequest.user = mockUser;
+		mockRequest.query = mockQuery;
+
+		mockResumesService.getResumes.mockReturnValue(mockReturn);
 		// WHEN
+		await resumesController.getResumes(mockRequest, mockResponse, mockNext);
 		// THEN
+		const expectedJsonCalledWith = {
+			status: HTTP_STATUS.OK,
+			message: MESSAGES.RESUMES.READ_LIST.SUCCEED,
+			data: mockReturn
+		};
+
+		expect(mockResumesService.getResumes).toHaveBeenCalledTimes(1);
+		expect(mockResumesService.getResumes).toHaveBeenCalledWith(authorId, sort);
+
+		expect(mockResponse.status).toHaveBeenCalledTimes(1);
+		expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+
+		expect(mockResponse.json).toHaveBeenCalledTimes(1);
+		expect(mockResponse.json).toHaveBeenCalledWith(expectedJsonCalledWith);
 	});
 
 	test('readOne Method', async () => {
 		// GIVEN
+		const mockUser = dummyUsers[1];
+		const authorId = mockUser.id;
+		const id = 1;
+		const mockParams = { id };
+		let mockReturn = dummyResumes.filter((resume) => resume.id == id && resume.authorId == authorId)[0];
+		mockReturn = {
+			id: mockReturn.id,
+			authorName: mockReturn.author.name,
+			title: mockReturn.title,
+			content: mockReturn.content,
+			status: mockReturn.status,
+			createdAt: mockReturn.createdAt,
+			updatedAt: mockReturn.updatedAt
+		}
+
+		mockRequest.user = mockUser;
+		mockRequest.params = mockParams;
+
+		mockResumesService.getResume.mockReturnValue(mockReturn);
 		// WHEN
+		await resumesController.getResume(mockRequest, mockResponse, mockNext);
 		// THEN
+		const expectedJsonCalledWith = {
+			status: HTTP_STATUS.OK,
+			message: MESSAGES.RESUMES.READ_DETAIL.SUCCEED,
+			data: mockReturn
+		};
+
+		expect(mockResumesService.getResume).toHaveBeenCalledTimes(1);
+		expect(mockResumesService.getResume).toHaveBeenCalledWith(authorId, id);
+
+		expect(mockResponse.status).toHaveBeenCalledTimes(1);
+		expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+
+		expect(mockResponse.json).toHaveBeenCalledTimes(1);
+		expect(mockResponse.json).toHaveBeenCalledWith(expectedJsonCalledWith);
+
 	});
 
 	test('update Method', async () => {
