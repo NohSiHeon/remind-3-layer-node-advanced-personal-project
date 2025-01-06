@@ -162,13 +162,83 @@ describe('ResumesController Unit Test', () => {
 
 	test('update Method', async () => {
 		// GIVEN
+		const mockUser = dummyUsers[1];
+		const authorId = mockUser.id;
+		const id = 1;
+		const title = "수정된 튼튼한 개발자 스파르탄";
+		const content = "수정된 저는 튼튼함을 제 자랑거리로 선보일 수 있습니다. 어떤 도전이든 두려워하지 않고, 견고한 코드와 해결책을 제시할 자신이 있습니다. 복잡한 문제에 직면했을 때에도 냉정하게 분석하고 빠르게 대응하는 능력을 갖췄습니다. 또한, 팀원들과의 원활한 커뮤니케이션을 통해 프로젝트의 성공을 이끌어내는데 기여할 것입니다. 최고의 결과물을 위해 끊임없이 노력하며, 스파르타코딩클럽에서도 이 같은 튼튼함을 발휘하여 뛰어난 성과를 이루고자 합니다.";
+		const mockParams = { id };
+		const mockBody = {
+			title,
+			content
+		}
+
+		let mockReturn = dummyResumes.filter((resume) => resume.id == id && resume.authorId == authorId)[0];
+		mockReturn = {
+			id: mockReturn.id,
+			authorId: mockReturn.authorId,
+			title,
+			content,
+			status: mockReturn.status,
+			createdAt: mockReturn.createdAt,
+			updatedAt: mockReturn.updatedAt
+		};
+
+		mockRequest.user = mockUser;
+		mockRequest.params = mockParams;
+		mockRequest.body = mockBody;
+
+		mockResumesService.updateResume.mockReturnValue(mockReturn);
 		// WHEN
+		await resumesController.updateResume(mockRequest, mockResponse, mockNext);
 		// THEN
+		const expectedJsonCalledWith = {
+			status: HTTP_STATUS.OK,
+			message: MESSAGES.RESUMES.UPDATE.SUCCEED,
+			data: mockReturn
+		};
+
+		expect(mockResumesService.updateResume).toHaveBeenCalledTimes(1);
+		expect(mockResumesService.updateResume).toHaveBeenCalledWith(authorId, id, title, content);
+
+		expect(mockResponse.status).toHaveBeenCalledTimes(1);
+		expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+
+		expect(mockResponse.json).toHaveBeenCalledTimes(1);
+		expect(mockResponse.json).toHaveBeenCalledWith(expectedJsonCalledWith);
+
 	});
 
 	test('delete Method', async () => {
 		// GIVEN
+		const mockUser = dummyUsers[1];
+		const id = 1;
+		const authorId = dummyUsers[1].id;
+		const mockParams = { id };
+		let mockReturn = dummyResumes.filter(resume => resume.id == id && authorId == authorId)[0];
+		mockReturn = mockReturn.id;
+
+		mockRequest.user = mockUser;
+		mockRequest.params = mockParams;
+		mockResumesService.deleteResume.mockReturnValue(mockReturn);
+
 		// WHEN
+		await resumesController.deleteResume(mockRequest, mockResponse, mockNext);
+
 		// THEN
+		const expectedJsonCalledWith = {
+			status: HTTP_STATUS.OK,
+			message: MESSAGES.RESUMES.DELETE.SUCCEED,
+			data: mockReturn
+		};
+
+		expect(mockResumesService.deleteResume).toHaveBeenCalledTimes(1);
+		expect(mockResumesService.deleteResume).toHaveBeenCalledWith(authorId, id);
+
+		expect(mockResponse.status).toHaveBeenCalledTimes(1);
+		expect(mockResponse.status).toHaveBeenCalledWith(HTTP_STATUS.OK);
+
+		expect(mockResponse.json).toHaveBeenCalledTimes(1);
+		expect(mockResponse.json).toHaveBeenCalledWith(expectedJsonCalledWith);
 	});
 });

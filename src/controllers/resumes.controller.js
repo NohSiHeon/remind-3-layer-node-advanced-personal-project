@@ -77,7 +77,11 @@ class ResumeController {
 
 			const data = await this.resumeService.updateResume(authorId, id, title, content);
 
-			return data;
+			return res.status(HTTP_STATUS.OK).json({
+				status: HTTP_STATUS.OK,
+				message: MESSAGES.RESUMES.UPDATE.SUCCEED,
+				data
+			});
 		} catch (error) {
 			next(error);
 		}

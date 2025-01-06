@@ -72,14 +72,7 @@ describe('ResumesRepository Unit Test', () => {
 		);
 
 		// THEN
-		const expectedResult = mockReturn.map(resume => {
-			return {
-				...resume,
-				authorName: resume.author.name,
-				authorId: undefined,
-				author: undefined
-			}
-		});
+		const expectedResult = mockReturn;
 
 		expect(mockPrisma.resume.findMany).toHaveBeenCalledTimes(1);
 		expect(mockPrisma.resume.findMany).toBeCalledWith({

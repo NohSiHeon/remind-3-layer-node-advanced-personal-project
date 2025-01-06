@@ -75,7 +75,7 @@ class ResumeService {
 		}
 
 		const deleteResume = await this.resumeRepository.deleteResume(authorId, id);
-
+		console.log(deleteResume.id);
 		return deleteResume.id;
 	}
 }
