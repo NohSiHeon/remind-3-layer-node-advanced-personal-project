@@ -39,6 +39,16 @@ class AuthService {
 
 		return accessToken;
 	}
+
+	upload = async (userId, profileImageUrl) => {
+		if (!profileImageUrl) {
+			throw new HttpError.NotFound("이미지를 첨부해주세요.");
+		}
+
+		const url = await this.authRepository.upload(userId, profileImageUrl);
+
+		return url;
+	}
 }
 
 export { AuthService };

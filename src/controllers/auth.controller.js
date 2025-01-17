@@ -36,6 +36,22 @@ class AuthController {
 			next(error);
 		}
 	}
+
+	upload = async (req, res, next) => {
+		try {
+			const user = req.user;
+			const userId = user.id;
+			const profileImageUrl = req.file?.location;
+
+			const data = await this.authService.upload(userId, profileImageUrl);
+			return res.status(HTTP_STATUS.OK).json({
+				status: HTTP_STATUS.OK,
+				data
+			});
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 export { AuthController };
