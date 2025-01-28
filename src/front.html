@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Naver Login Test</title>
+  </head>
+  <body>
+    <h1>Naver Login Test</h1>
+
+    <!-- 로그인 버튼 -->
+    <button id="naver-login-btn">네이버 로그인</button>
+
+    <!-- 결과를 보여줄 영역 -->
+    <div id="result" style="margin-top: 20px"></div>
+
+    <script>
+      const redirectUri = 'http://localhost:3000/api/auth/naver'; // 백엔드에서 지정한 Redirect URI
+
+      // 로그인 버튼 클릭 시 동작
+      document
+        .getElementById('naver-login-btn')
+        .addEventListener('click', () => {
+          window.location.href = redirectUri; // 네이버 로그인 페이지로 리다이렉트
+        });
+    </script>
+  </body>
+</html>

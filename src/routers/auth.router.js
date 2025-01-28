@@ -14,6 +14,8 @@ const authController = new AuthController(authService);
 
 authRouter.post('/sign-up', signUpValidator, authController.signUp);
 authRouter.post('/sign-in', signInValidator, authController.signIn);
+authRouter.get('/naver', authController.naverLogin);
+authRouter.get('/naver/callback', authController.naverLoginCallback);
 
 
 

@@ -35,6 +35,15 @@ class AuthRepository {
 		return user;
 	}
 
+	createSocialUser = async (email, name) => {
+		await this.prisma.user.create({
+			data: {
+				email,
+				name,
+				provider: 'NAVER'
+			}
+		});
+	}
 
 }
 

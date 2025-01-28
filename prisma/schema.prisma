@@ -17,10 +17,11 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String
+  password  String?
   name      String
   role      UserRole @default(APPLICANT)
-  profile   String
+  profile   String?
+  provider  Provider @default(NONE)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   resumes   Resume[]
@@ -44,6 +45,11 @@ model Resume {
 enum UserRole {
   APPLICANT
   RECRUITER
+}
+
+enum Provider {
+  NONE
+  NAVER
 }
 
 enum ResumeStatus {
