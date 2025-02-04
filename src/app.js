@@ -4,8 +4,10 @@ import { errorHandler } from './middlewares/error-handler.middleware.js';
 import { HTTP_STATUS } from './constants/http-status.constant.js';
 import { apiRouter } from './routers/index.js';
 import session from 'express-session';
+import { connectRedis } from './configs/redis.config.js';
 
 const app = express();
+connectRedis();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

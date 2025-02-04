@@ -15,16 +15,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String?
-  name      String
-  role      UserRole @default(APPLICANT)
-  profile   String?
-  provider  Provider @default(NONE)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  resumes   Resume[]
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  password     String?
+  name         String
+  role         UserRole       @default(APPLICANT)
+  profile      String?
+  provider     Provider       @default(NONE)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  resumes      Resume[]
+  RefreshToken RefreshToken[]
 
   @@map("users")
 }
@@ -40,6 +41,17 @@ model Resume {
   author    User         @relation(fields: [authorId], references: [id])
 
   @@map("resumes")
+}
+
+model RefreshToken {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique @map("user_id")
+  refreshToken String
+  user         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("refreshTokens")
 }
 
 enum UserRole {

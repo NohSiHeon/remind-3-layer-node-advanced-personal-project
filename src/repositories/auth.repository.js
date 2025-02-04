@@ -44,7 +44,32 @@ class AuthRepository {
 			}
 		});
 	}
+	findRefreshTokenByUserId = async (userId) => {
+		const refreshToken = await this.prisma.refreshToken.findUnique({
+			where: {
+				userId
+			}
+		});
 
+		return refreshToken;
+	}
+
+	createRefreshToken = async (userId, refreshToken) => {
+		await this.prisma.refreshToken.create({
+			data: {
+				userId,
+				refreshToken
+			}
+		});
+	}
+
+	logOut = async (userId) => {
+		return await this.prisma.refreshToken.delete({
+			where: {
+				userId
+			}
+		});
+	}
 }
 
 export { AuthRepository };

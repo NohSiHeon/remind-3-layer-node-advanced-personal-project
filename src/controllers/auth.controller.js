@@ -1,5 +1,3 @@
-import axios from "axios";
-import { NAVER_CALLBACK_URL, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from "../constants/env.constant.js";
 import { HTTP_STATUS } from "../constants/http-status.constant.js";
 import { MESSAGES } from "../constants/message.constant.js";
 
@@ -39,17 +37,17 @@ class AuthController {
 		}
 	}
 
-	upload = async (req, res, next) => {
+	logOut = async (req, res, next) => {
 		try {
 			const user = req.user;
 			const userId = user.id;
-			const profileImageUrl = req.file?.location;
 
-			const data = await this.authService.upload(userId, profileImageUrl);
+			await this.authService.logOut(userId);
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,
-				data
+				message: "성공적으로 로그아웃되었습니다."
 			});
+
 		} catch (error) {
 			next(error);
 		}

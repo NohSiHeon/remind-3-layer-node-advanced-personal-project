@@ -1,15 +1,16 @@
 import bcrypt from "bcrypt";
 import { ACCESS_TOKEN_EXPIRES_IN, HASH_SALT_ROUNDS } from "../constants/auth.constant.js";
 import jwt from "jsonwebtoken";
-import { ACCESS_TOKEN_SECRET, NAVER_CALLBACK_URL, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET } from "../constants/env.constant.js";
+import { ACCESS_TOKEN_SECRET, NAVER_CALLBACK_URL, NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, REFRESH_TOKEN_EXPIRES_IN, REFRESH_TOKEN_SECRET } from "../constants/env.constant.js";
 import { HttpError } from "../errors/http.error.js";
 import { MESSAGES } from "../constants/message.constant.js";
 import crypto from 'crypto';
 import axios from "axios";
 
 class AuthService {
-	constructor(authRepository) {
+	constructor(authRepository, redisClient) {
 		this.authRepository = authRepository;
+		this.redisClient = redisClient;
 	}
 
 	signUp = async (email, password, name) => {
@@ -28,7 +29,6 @@ class AuthService {
 
 	signIn = async (email, password) => {
 		const existedUser = await this.authRepository.findUserByEmail(email);
-
 		const isPasswordMatched = existedUser && bcrypt.compareSync(password, existedUser.password);
 
 		if (!isPasswordMatched) {
@@ -38,20 +38,35 @@ class AuthService {
 		const payload = { id: existedUser.id };
 
 		const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+		await this.redisClient.set(`accessToken:userId:${existedUser.id}`, accessToken, { EX: 3600 });
 
-		return accessToken;
-	}
+		const existedRefreshToken = await this.authRepository.findRefreshTokenByUserId(existedUser.id);
+		if (!existedRefreshToken) {
+			const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+			await this.authRepository.createRefreshToken(existedUser.id, refreshToken);
 
-	upload = async (userId, profileImageUrl) => {
-		if (!profileImageUrl) {
-			throw new HttpError.NotFound("이미지를 첨부해주세요.");
+			return { accessToken, refreshToken };
 		}
 
-		const url = await this.authRepository.upload(userId, profileImageUrl);
-
-		return url;
+		return { accessToken };
 	}
 
+	logOut = async (userId) => {
+		const user = await this.authRepository.findUserById(userId);
+
+		if (!user) {
+			throw new HttpError.NotFound(MESSAGES.AUTH.COMMON.JWT.NO_USER);
+		}
+
+		const refreshToken = await this.authRepository.findRefreshTokenByUserId(userId);
+		if (!refreshToken) {
+			throw new HttpError.NotFound(MESSAGES.AUTH.COMMON.JWT.NO_TOKEN);
+		}
+
+		await this.authRepository.logOut(userId);
+		await this.redisClient.del(`accessToken:userId:${user.id}`);
+
+	}
 	// 네이버 소셜 로그인 state 생성
 	generateState = async () => {
 		const state = await crypto.randomBytes(16).toString('hex');
