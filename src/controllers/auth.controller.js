@@ -86,8 +86,13 @@ class AuthController {
 				const profileData = await this.authService.getProfile(accessToken);
 
 				// 소셜 전용 회원가입
-				await this.authService.createSocialUser(profileData.email, profileData.name);
-
+				const { jwtAccessToken, jwtRefreshToken } = await this.authService.createSocialUser(profileData.email, profileData.name);
+				return res.status(HTTP_STATUS.OK).json({
+					naverAccessToken: tokenData.access_token,
+					naverRefreshToken: tokenData.refresh_token,
+					accessToken: jwtAccessToken,
+					refreshToken: jwtRefreshToken
+				});
 			}
 
 			// 소셜 로그인에 실패했을 경우

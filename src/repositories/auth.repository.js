@@ -36,13 +36,14 @@ class AuthRepository {
 	}
 
 	createSocialUser = async (email, name) => {
-		await this.prisma.user.create({
+		const user = await this.prisma.user.create({
 			data: {
 				email,
 				name,
 				provider: 'NAVER'
 			}
 		});
+		return user;
 	}
 	findRefreshTokenByUserId = async (userId) => {
 		const refreshToken = await this.prisma.refreshToken.findUnique({

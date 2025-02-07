@@ -114,15 +114,27 @@ class AuthService {
 
 	createSocialUser = async (email, name) => {
 		// 이미 가입한 이메일인지 확인
-		const user = await this.authRepository.findUserByEmail(email);
+		let user = await this.authRepository.findUserByEmail(email);
 
-		if (user) {
-			console.log("이미 가입한 이메일입니다.");
+		// 신규 유저일 경우 회원가입
+		if (!user) {
+			user = await this.authRepository.createSocialUser(email, name);
+		}
+		// 리프레쉬 토큰이 이미 있는지 조회(이미 가입했을 경우 있음)
+		let jwtRefreshToken = await this.authRepository.findRefreshTokenByUserId(user.id);
+		// 리프레쉬 토큰이 없을 경우 새로 만들고 DB에 저장
+		if (!jwtRefreshToken) {
+			jwtRefreshToken = jwt.sign({ id: user.id }, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
+			await this.authRepository.createRefreshToken(user.id, jwtRefreshToken);
 		} else {
-			// 소셜 유저 회원가입
-			await this.authRepository.createSocialUser(email, name);
+			jwtRefreshToken = jwtRefreshToken.refreshToken;
 		}
 
+		// 서비스에서 사용하는 액세스 토큰 생성 및 저장
+		const jwtAccessToken = jwt.sign({ id: user.id }, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+		await this.redisClient.set(`accessToken:userId:${user.id}`, jwtAccessToken, { EX: 3600 });
+
+		return { jwtAccessToken, jwtRefreshToken };
 	}
 }
 
