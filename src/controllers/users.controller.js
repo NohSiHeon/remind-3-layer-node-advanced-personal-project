@@ -24,9 +24,11 @@ class UsersController {
 		try {
 			const user = req.user;
 			const userId = user.id;
-			const profileImageUrl = req.file?.location;
 
-			const data = await this.userService.profile(userId, profileImageUrl);
+			const image = req.file;
+
+
+			const data = await this.userService.profile(userId, image);
 
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,

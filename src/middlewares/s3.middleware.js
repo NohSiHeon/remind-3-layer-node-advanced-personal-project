@@ -9,17 +9,7 @@ const s3 = new AWS.S3({
 	region: AWS_REGION
 });
 
-const upload = multer({
-	storage: multerS3({
-		s3,
-		bucket: 'nsh-s3-bucket', // S3 버킷 이름
-		acl: 'public-read',  // 파일을 public-read로 설정하여 URL로 접근 가능
-		key: (req, file, cb) => {
-			const fileName = `uploads/${Date.now()}-${file.originalname}`;
-			cb(null, fileName);  // S3에 저장될 파일 이름 지정
-		},
-	}),
-});
+const upload = multer({ storage: multer.memoryStorage() });
 
 
-export { upload };
+export { upload, s3 };
