@@ -15,17 +15,17 @@ datasource db {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  email        String         @unique
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
   password     String?
   name         String
-  role         UserRole       @default(APPLICANT)
+  role         UserRole      @default(APPLICANT)
   profile      String?
-  provider     Provider       @default(NONE)
-  createdAt    DateTime       @default(now()) @map("created_at")
-  updatedAt    DateTime       @updatedAt @map("updated_at")
+  provider     Provider      @default(NONE)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
   resumes      Resume[]
-  RefreshToken RefreshToken[]
+  RefreshToken RefreshToken?
 
   @@map("users")
 }
@@ -36,6 +36,7 @@ model Resume {
   title     String
   content   String       @db.Text
   status    ResumeStatus @default(APPLY)
+  isPublic  IsPublic     @default(TRUE) @map("is_public")
   createdAt DateTime     @default(now()) @map("created_at")
   updatedAt DateTime     @updatedAt @map("updated_at")
   author    User         @relation(fields: [authorId], references: [id])
@@ -71,4 +72,9 @@ enum ResumeStatus {
   INTERVIEW1
   INTERVIEW2
   FINAL_PASS
+}
+
+enum IsPublic {
+  TRUE
+  FALSE
 }

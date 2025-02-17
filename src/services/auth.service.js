@@ -48,7 +48,7 @@ class AuthService {
 			return { accessToken, refreshToken };
 		}
 
-		return { accessToken };
+		return { accessToken, refreshToken: existedRefreshToken.refreshToken };
 	}
 
 	logOut = async (userId) => {

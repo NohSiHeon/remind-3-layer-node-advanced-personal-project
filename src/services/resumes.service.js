@@ -12,8 +12,14 @@ class ResumeService {
 		return resume;
 	}
 
-	getResumes = async (authorId, sort) => {
-		let resumes = await this.resumeRepository.findResumes(authorId, sort);
+	getResumes = async (authorId, role, sort) => {
+		let resumes;
+
+		if (role == 'APPLICANT') {
+			resumes = await this.resumeRepository.findResumesByAuthorIdForApplicant(authorId, sort);
+		} else if (role == 'RECRUITER') {
+			resumes = await this.resumeRepository.findResumesByAuthorIdForRecruiter(authorId, sort);
+		}
 
 		if (!resumes) {
 			throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
@@ -55,14 +61,14 @@ class ResumeService {
 		return resume;
 	}
 
-	updateResume = async (authorId, id, title, content) => {
+	updateResume = async (authorId, id, title, content, isPublic) => {
 		const existedResume = await this.resumeRepository.findResumeByIdAndAuthorId(id, authorId);
 
 		if (!existedResume) {
 			throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
 		}
 
-		const updatedResume = await this.resumeRepository.updateResume(id, authorId, title, content);
+		const updatedResume = await this.resumeRepository.updateResume(id, authorId, title, content, isPublic);
 
 		return updatedResume;
 	}

@@ -3,21 +3,22 @@ import { MESSAGES } from '../../constants/message.constant.js';
 import { MIN_RESUME_LENGTH } from '../../constants/resume.constant.js';
 
 const schema = Joi.object({
-  title: Joi.string(),
-  content: Joi.string().min(MIN_RESUME_LENGTH).messages({
-    'string.min': MESSAGES.RESUMES.COMMON.CONTENT.MIN_LENGTH,
-  }),
+	title: Joi.string(),
+	content: Joi.string().min(MIN_RESUME_LENGTH).messages({
+		'string.min': MESSAGES.RESUMES.COMMON.CONTENT.MIN_LENGTH,
+	}),
+	isPublic: Joi.string()
 })
-  .min(1)
-  .messages({
-    'object.min': MESSAGES.RESUMES.UPDATE.NO_BODY_DATA,
-  });
+	.min(1)
+	.messages({
+		'object.min': MESSAGES.RESUMES.UPDATE.NO_BODY_DATA,
+	});
 
 export const updateResumeValidator = async (req, res, next) => {
-  try {
-    await schema.validateAsync(req.body);
-    next();
-  } catch (error) {
-    next(error);
-  }
+	try {
+		await schema.validateAsync(req.body);
+		next();
+	} catch (error) {
+		next(error);
+	}
 };

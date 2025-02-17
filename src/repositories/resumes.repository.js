@@ -14,10 +14,23 @@ class ResumesRepository {
 
 		return resume;
 	}
-
-	findResumes = async (authorId, sort) => {
+	findResumesByAuthorIdForApplicant = async (authorId, sort) => {
 		let resumes = await this.prisma.resume.findMany({
 			where: { authorId },
+			orderBy: {
+				createdAt: sort,
+			},
+			include: {
+				author: true,
+			}
+		});
+
+		return resumes;
+	}
+
+	findResumesByAuthorIdForRecruiter = async (authorId, sort) => {
+		let resumes = await this.prisma.resume.findMany({
+			where: { isPublic: 'TRUE' },
 			orderBy: {
 				createdAt: sort,
 			},
@@ -52,13 +65,14 @@ class ResumesRepository {
 		return resume;
 	}
 
-	updateResume = async (id, authorId, title, content) => {
+	updateResume = async (id, authorId, title, content, isPublic) => {
 		const updatedResume = await this.prisma.resume.update({
 			where: {
 				id: +id,
 				authorId
 			},
 			data: {
+				...(isPublic && { isPublic }),
 				...(title && { title }),
 				...(content && { content }),
 			},

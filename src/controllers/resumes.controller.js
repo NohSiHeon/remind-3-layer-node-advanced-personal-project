@@ -28,6 +28,7 @@ class ResumeController {
 	getResumes = async (req, res, next) => {
 		try {
 			const user = req.user;
+			const role = user.role;
 			const authorId = user.id;
 			let { sort } = req.query;
 
@@ -37,7 +38,7 @@ class ResumeController {
 				sort = 'desc';
 			}
 
-			const data = await this.resumeService.getResumes(authorId, sort);
+			const data = await this.resumeService.getResumes(authorId, role, sort);
 
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,
@@ -73,9 +74,9 @@ class ResumeController {
 			const user = req.user;
 			const authorId = user.id;
 			const { id } = req.params;
-			const { title, content } = req.body;
+			const { title, content, isPublic } = req.body;
 
-			const data = await this.resumeService.updateResume(authorId, id, title, content);
+			const data = await this.resumeService.updateResume(authorId, id, title, content, isPublic);
 
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,
