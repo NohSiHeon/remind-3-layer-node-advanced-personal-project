@@ -29,6 +29,10 @@ class AuthService {
 
 	signIn = async (email, password) => {
 		const existedUser = await this.authRepository.findUserByEmail(email);
+
+		if (!existedUser) {
+			throw new HttpError.NotFound(MESSAGES.AUTH.SIGN_IN.FAILED);
+		}
 		const isPasswordMatched = existedUser && bcrypt.compareSync(password, existedUser.password);
 
 		if (!isPasswordMatched) {
@@ -39,16 +43,15 @@ class AuthService {
 
 		const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
 		await this.redisClient.set(`accessToken:userId:${existedUser.id}`, accessToken, { EX: 3600 });
+		const existedRefreshToken = await this.findRefreshToken(existedUser.id);
 
-		const existedRefreshToken = await this.authRepository.findRefreshTokenByUserId(existedUser.id);
 		if (!existedRefreshToken) {
-			const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
-			await this.authRepository.createRefreshToken(existedUser.id, refreshToken);
+			const refreshToken = await this.createRefreshToken(payload, existedUser.id);
 
 			return { accessToken, refreshToken };
 		}
 
-		return { accessToken, refreshToken: existedRefreshToken.refreshToken };
+		return { accessToken, refreshToken: existedRefreshToken };
 	}
 
 	logOut = async (userId) => {
@@ -58,12 +61,12 @@ class AuthService {
 			throw new HttpError.NotFound(MESSAGES.AUTH.COMMON.JWT.NO_USER);
 		}
 
-		const refreshToken = await this.authRepository.findRefreshTokenByUserId(userId);
+		const refreshToken = await this.findRefreshToken(userId);
 		if (!refreshToken) {
 			throw new HttpError.NotFound(MESSAGES.AUTH.COMMON.JWT.NO_TOKEN);
 		}
 
-		await this.authRepository.logOut(userId);
+		await this.redisClient.del(`refreshToken:userId:${user.id}`);
 		await this.redisClient.del(`accessToken:userId:${user.id}`);
 
 	}
@@ -120,21 +123,33 @@ class AuthService {
 		if (!user) {
 			user = await this.authRepository.createSocialUser(email, name);
 		}
+		const payload = { id: user.id };
+
 		// 리프레쉬 토큰이 이미 있는지 조회(이미 가입했을 경우 있음)
-		let jwtRefreshToken = await this.authRepository.findRefreshTokenByUserId(user.id);
+		let jwtRefreshToken = await this.findRefreshToken(user.id);
 		// 리프레쉬 토큰이 없을 경우 새로 만들고 DB에 저장
 		if (!jwtRefreshToken) {
-			jwtRefreshToken = jwt.sign({ id: user.id }, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES_IN });
-			await this.authRepository.createRefreshToken(user.id, jwtRefreshToken);
-		} else {
-			jwtRefreshToken = jwtRefreshToken.refreshToken;
+			jwtRefreshToken = await this.createRefreshToken(payload, user.id);
 		}
 
 		// 서비스에서 사용하는 액세스 토큰 생성 및 저장
-		const jwtAccessToken = jwt.sign({ id: user.id }, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
+		const jwtAccessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES_IN });
 		await this.redisClient.set(`accessToken:userId:${user.id}`, jwtAccessToken, { EX: 3600 });
 
 		return { jwtAccessToken, jwtRefreshToken };
+	}
+
+	createRefreshToken = async (payload, userId) => {
+		const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET, { expiresIn: `${REFRESH_TOKEN_EXPIRES_IN}d` });
+		await this.redisClient.set(`refreshToken:userId:${userId}`, refreshToken, { EX: 3600 * 24 * REFRESH_TOKEN_EXPIRES_IN });
+
+		return refreshToken;
+	}
+
+	findRefreshToken = async (userId) => {
+		const refreshToken = await this.redisClient.get(`refreshToken:userId:${userId}`);
+
+		return refreshToken;
 	}
 }
 
