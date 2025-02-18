@@ -15,16 +15,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String?
-  name      String
-  role      UserRole @default(APPLICANT)
-  profile   String?
-  provider  Provider @default(NONE)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  resumes   Resume[]
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
+  password   String?
+  name       String
+  role       UserRole     @default(APPLICANT)
+  profile    String?
+  provider   Provider     @default(NONE)
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  resumes    Resume[]
+  JobPosting JobPosting[]
 
   @@map("users")
 }
@@ -41,6 +42,23 @@ model Resume {
   author    User         @relation(fields: [authorId], references: [id])
 
   @@map("resumes")
+}
+
+model JobPosting {
+  id          Int      @id @default(autoincrement())
+  recruiterId Int      @map("recruiter_id")
+  title       String
+  name        String
+  location    String
+  salary      String?
+  jobType     String
+  description String
+  isPublic    IsPublic @default(TRUE)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  recruiter   User     @relation(fields: [recruiterId], references: [id])
+
+  @@map("job_postings")
 }
 
 enum UserRole {

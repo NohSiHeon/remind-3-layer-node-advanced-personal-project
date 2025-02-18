@@ -70,4 +70,25 @@ export const MESSAGES = {
 			SUCCEED: '이력서 삭제에 성공했습니다.',
 		},
 	},
+	JOB_POSTINGS: {
+		COMMON: {
+			FORBIDDEN_RECRUITER_ACCESS: '채용 공고를 생성할 권한이 없습니다.',
+			NOT_FOUND: '채용공고가 존재하지 않습니다.'
+		},
+		CREATE: {
+			SUCCEED: '채용 공고 생성에 성공했습니다.'
+		},
+		READ_LIST: {
+			SUCCEED: '채용 공고 목록 조회에 성공했습니다.'
+		},
+		READ_DETAIL: {
+			SUCCEED: '채용 공고 상세 조회에 성공했습니다.'
+		},
+		UPDATE: {
+			SUCCEED: '채용 공고 수정에 성공했습니다.'
+		},
+		DELETE: {
+			SUCCEED: '채용 공고 삭제에 성공했습니다.'
+		}
+	}
 };
