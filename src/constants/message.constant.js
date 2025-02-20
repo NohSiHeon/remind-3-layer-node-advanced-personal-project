@@ -90,5 +90,27 @@ export const MESSAGES = {
 		DELETE: {
 			SUCCEED: '채용 공고 삭제에 성공했습니다.'
 		}
+	},
+	APPLIES: {
+		COMMON: {
+			FORBIDDEN: '권한이 없습니다.',
+			ALREADY_APPLIED: "이미 해당 채용 공고에 지원하였습니다.",
+			NOT_FOUND: '지원 내역이 존재하지 않습니다.'
+		},
+		CREATE: {
+			SUCCEED: '채용 공고 지원에 성공했습니다.'
+		},
+		READ_LIST: {
+			SUCCEED: '채용 공고 지원 목록 조회에 성공했습니다.'
+		},
+		READ_DETAIL: {
+			SUCCEED: '채용 공고 지원 상세 조회에 성공했습니다.'
+		},
+		UPDATE: {
+			SUCCEED: '채용 공고 지원 수정에 성공했습니다.'
+		},
+		DELETE: {
+			SUCCEED: '채용 공고 지원 지원 취소에 성공했습니다.'
+		}
 	}
 };

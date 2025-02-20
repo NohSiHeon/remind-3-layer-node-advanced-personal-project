@@ -26,20 +26,21 @@ model User {
   updatedAt  DateTime     @updatedAt @map("updated_at")
   resumes    Resume[]
   JobPosting JobPosting[]
+  Apply      Apply[]
 
   @@map("users")
 }
 
 model Resume {
-  id        Int          @id @default(autoincrement())
-  authorId  Int          @map("author_id")
+  id        Int      @id @default(autoincrement())
+  authorId  Int      @map("author_id")
   title     String
-  content   String       @db.Text
-  status    ResumeStatus @default(APPLY)
-  isPublic  IsPublic     @default(TRUE) @map("is_public")
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @updatedAt @map("updated_at")
-  author    User         @relation(fields: [authorId], references: [id])
+  content   String   @db.Text
+  isPublic  IsPublic @default(TRUE) @map("is_public")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  author    User     @relation(fields: [authorId], references: [id])
+  Apply     Apply[]
 
   @@map("resumes")
 }
@@ -57,8 +58,26 @@ model JobPosting {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
   recruiter   User     @relation(fields: [recruiterId], references: [id])
+  Apply       Apply[]
 
   @@map("job_postings")
+}
+
+model Apply {
+  id           Int          @id @default(autoincrement())
+  userId       Int          @map("user_id")
+  resumeId     Int          @map("resume_id")
+  jobPostingId Int          @map("job_posting_id")
+  status       ResumeStatus @default(APPLY)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobPosting JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  resume     Resume     @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobPostingId])
+  @@map("applies")
 }
 
 enum UserRole {
