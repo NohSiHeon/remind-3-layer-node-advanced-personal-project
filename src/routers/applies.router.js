@@ -6,6 +6,7 @@ import { prisma } from '../utils/prisma.util.js';
 import { ResumesRepository } from '../repositories/resumes.repository.js';
 import { JobPostingRepository } from '../repositories/job-postings.repository.js';
 import { checkApplicantRoleMiddleware } from '../middlewares/check-applicant-role.middleware.js';
+import { checkRecruiterRoleMiddleware } from '../middlewares/check-recruiter-role.middleware.js';
 
 
 const resumeRepository = new ResumesRepository(prisma);
@@ -19,7 +20,7 @@ const appliesRouter = express.Router();
 appliesRouter.post('/', checkApplicantRoleMiddleware, applyController.applyJobPosting);
 appliesRouter.get('/', applyController.getApplies);
 appliesRouter.get('/:id', applyController.getApply);
-// appliesRouter.patch('/:id', checkApplicantRoleMiddleware, applyController.updateStatus);
+appliesRouter.patch('/:id', checkRecruiterRoleMiddleware, applyController.updateStatus);
 // appliesRouter.delete('/:id', applyController.cancelApply)
 
 export { appliesRouter };

@@ -1,7 +1,7 @@
 import { MESSAGES } from "../constants/message.constant.js";
 import { HttpError } from "../errors/http.error.js";
 
-export const checkRecruiterRole = async (req, res, next) => {
+export const checkRecruiterRoleMiddleware = async (req, res, next) => {
 	try {
 		const role = req.user.role;
 		if (role !== 'RECRUITER') {

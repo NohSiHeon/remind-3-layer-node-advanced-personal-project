@@ -95,6 +95,45 @@ class ApplyRepository {
 
 		return apply;
 	}
+
+	findApplyByUserIdAndApplyIdForRecruiter = async (userId, id) => {
+		const apply = await this.prisma.apply.findUnique({
+			where: {
+				id: +id,
+				jobPosting: {
+					recruiterId: +userId
+				}
+			},
+			include: {
+				jobPosting: {
+					select: { recruiterId: true }
+				}
+			}
+		});
+
+		return apply;
+	}
+
+	updateStatus = async (userId, id, status) => {
+		const apply = await this.prisma.apply.update({
+			where: {
+				id: +id,
+				jobPosting: {
+					recruiterId: +userId
+				}
+			},
+			data: {
+				status
+			},
+			include: {
+				jobPosting: {
+					select: { recruiterId: true }
+				}
+			}
+		});
+
+		return apply;
+	}
 }
 
 export { ApplyRepository };
