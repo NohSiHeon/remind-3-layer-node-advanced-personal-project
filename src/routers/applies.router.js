@@ -7,9 +7,10 @@ import { ResumesRepository } from '../repositories/resumes.repository.js';
 import { JobPostingRepository } from '../repositories/job-postings.repository.js';
 import { checkApplicantRoleMiddleware } from '../middlewares/check-applicant-role.middleware.js';
 
+
 const resumeRepository = new ResumesRepository(prisma);
 const jobPostingRepository = new JobPostingRepository(prisma);
-const applyRepository = new ApplyRepository(prisma);
+const applyRepository = new ApplyRepository(prisma, jobPostingRepository);
 const applyService = new ApplyService(applyRepository, resumeRepository, jobPostingRepository);
 const applyController = new ApplyController(applyService);
 

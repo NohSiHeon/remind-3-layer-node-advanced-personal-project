@@ -19,11 +19,6 @@ class ApplyService {
 			throw new HttpError.NotFound(MESSAGES.JOB_POSTINGS.COMMON.NOT_FOUND);
 		}
 
-		const alreadyApplied = await this.applyRepository.findApply(userId, jobPostingId);
-		if (alreadyApplied) {
-			throw new HttpError.Conflict(MESSAGES.APPLIES.COMMON.ALREADY_APPLIED);
-		}
-
 		const apply = await this.applyRepository.applyJobPosting(userId, resumeId, jobPostingId);
 
 		return apply;

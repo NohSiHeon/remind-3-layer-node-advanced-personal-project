@@ -67,7 +67,18 @@ class JobPostingRepository {
 
 		return deletedJobPosting;
 	}
-
+	incrementApplicantCount = async (tx, jobPostingId) => {
+		await tx.jobPosting.update({
+			where: {
+				id: jobPostingId
+			},
+			data: {
+				applicantCount: {
+					increment: 1
+				}
+			}
+		});
+	}
 }
 
 export { JobPostingRepository };

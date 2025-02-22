@@ -46,19 +46,20 @@ model Resume {
 }
 
 model JobPosting {
-  id          Int      @id @default(autoincrement())
-  recruiterId Int      @map("recruiter_id")
-  title       String
-  name        String
-  location    String
-  salary      String?
-  jobType     String
-  description String
-  isPublic    IsPublic @default(TRUE)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  recruiter   User     @relation(fields: [recruiterId], references: [id])
-  Apply       Apply[]
+  id             Int      @id @default(autoincrement())
+  recruiterId    Int      @map("recruiter_id")
+  title          String
+  name           String
+  location       String
+  salary         String?
+  jobType        String
+  description    String
+  applicantCount Int      @default(0) @map("applicant_count")
+  isPublic       IsPublic @default(TRUE)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  recruiter      User     @relation(fields: [recruiterId], references: [id])
+  Apply          Apply[]
 
   @@map("job_postings")
 }
