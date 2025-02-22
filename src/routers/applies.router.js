@@ -18,8 +18,8 @@ const appliesRouter = express.Router();
 
 appliesRouter.post('/', checkApplicantRoleMiddleware, applyController.applyJobPosting);
 appliesRouter.get('/', applyController.getApplies);
-// appliesRouter.get('/:id', applyController.getApply);
-// appliesRouter.patch('/:id', applyController.updateStatus);
+appliesRouter.get('/:id', applyController.getApply);
+// appliesRouter.patch('/:id', checkApplicantRoleMiddleware, applyController.updateStatus);
 // appliesRouter.delete('/:id', applyController.cancelApply)
 
 export { appliesRouter };

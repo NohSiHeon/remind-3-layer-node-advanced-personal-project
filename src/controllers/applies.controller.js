@@ -40,6 +40,24 @@ class ApplyController {
 			next(error);
 		}
 	}
+
+	getApply = async (req, res, next) => {
+		try {
+			const { id } = req.params;
+			const user = req.user;
+			const userId = user.id;
+
+			const data = await this.applyService.getApply(userId, id);
+
+			return res.status(HTTP_STATUS.OK).json({
+				status: HTTP_STATUS.OK,
+				message: MESSAGES.APPLIES.READ_DETAIL.SUCCEED,
+				data
+			})
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 export { ApplyController };

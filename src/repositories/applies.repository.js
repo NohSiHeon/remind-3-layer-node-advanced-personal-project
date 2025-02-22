@@ -84,6 +84,17 @@ class ApplyRepository {
 
 		return applies;
 	}
+
+	findApplyByUserIdAndApplyId = async (userId, id) => {
+		const apply = await this.prisma.apply.findUnique({
+			where: {
+				userId: +userId,
+				id: +id
+			}
+		});
+
+		return apply;
+	}
 }
 
 export { ApplyRepository };

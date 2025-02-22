@@ -41,6 +41,17 @@ class ApplyService {
 
 		return applies;
 	}
+
+	getApply = async (userId, id) => {
+
+		const apply = await this.applyRepository.findApplyByUserIdAndApplyId(userId, id);
+
+		if (!apply) {
+			throw new HttpError.NotFound(MESSAGES.APPLIES.COMMON.NOT_FOUND);
+		}
+
+		return apply;
+	}
 }
 
 export { ApplyService };
