@@ -7,17 +7,6 @@ class ApplyRepository {
 		this.jobPostingRepository = jobPostingRepository;
 	}
 
-	// applyJobPosting = async (userId, resumeId, jobPostingId) => {
-	// 	const apply = await this.prisma.apply.create({
-	// 		data: {
-	// 			userId,
-	// 			resumeId,
-	// 			jobPostingId
-	// 		}
-	// 	});
-
-	// 	return apply;
-	// }
 	applyJobPosting = async (userId, resumeId, jobPostingId) => {
 		return await this.prisma.$transaction(async (tx) => {
 			const existingApply = await this.findApply(tx, userId, jobPostingId);
@@ -67,6 +56,33 @@ class ApplyRepository {
 		});
 
 		return apply;
+	}
+
+	findAppliesByUserIdForApplicant = async (userId) => {
+		const applies = await this.prisma.apply.findMany({
+			where: {
+				userId: +userId
+			}
+		});
+
+		return applies;
+	}
+
+	findAppliesByUserIdForRecruiter = async (userId) => {
+		const applies = await this.prisma.apply.findMany({
+			where: {
+				jobPosting: {
+					recruiterId: +userId
+				}
+			},
+			include: {
+				jobPosting: {
+					select: { recruiterId: true }
+				}
+			}
+		});
+
+		return applies;
 	}
 }
 
