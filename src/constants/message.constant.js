@@ -110,7 +110,7 @@ export const MESSAGES = {
 			SUCCEED: '채용 공고 지원 수정에 성공했습니다.'
 		},
 		DELETE: {
-			SUCCEED: '채용 공고 지원 지원 취소에 성공했습니다.'
+			SUCCEED: '채용 공고 지원 취소에 성공했습니다.'
 		}
 	}
 };

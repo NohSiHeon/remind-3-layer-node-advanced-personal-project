@@ -79,6 +79,19 @@ class JobPostingRepository {
 			}
 		});
 	}
+
+	decrementApplicantCount = async (tx, jobPostingId) => {
+		await tx.jobPosting.update({
+			where: {
+				id: +jobPostingId
+			},
+			data: {
+				applicantCount: {
+					decrement: 1
+				}
+			}
+		});
+	}
 }
 
 export { JobPostingRepository };

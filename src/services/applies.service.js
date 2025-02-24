@@ -64,6 +64,18 @@ class ApplyService {
 
 		return updateStatusApply;
 	}
+
+	cancelApplyJobPosting = async (userId, id) => {
+		const apply = await this.applyRepository.findApplyByUserIdAndApplyId(userId, id);
+
+		if (!apply) {
+			throw new HttpError.NotFound(MESSAGES.APPLIES.COMMON.NOT_FOUND);
+		}
+
+		const cancelApply = await this.applyRepository.cancelApplyJobPosting(userId, id);
+
+		return cancelApply;
+	}
 }
 
 export { ApplyService };

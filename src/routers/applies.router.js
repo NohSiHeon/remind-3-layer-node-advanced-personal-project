@@ -21,6 +21,6 @@ appliesRouter.post('/', checkApplicantRoleMiddleware, applyController.applyJobPo
 appliesRouter.get('/', applyController.getApplies);
 appliesRouter.get('/:id', applyController.getApply);
 appliesRouter.patch('/:id', checkRecruiterRoleMiddleware, applyController.updateStatus);
-// appliesRouter.delete('/:id', applyController.cancelApply)
+appliesRouter.delete('/:id', checkApplicantRoleMiddleware, applyController.cancelApplyJobPosting)
 
 export { appliesRouter };

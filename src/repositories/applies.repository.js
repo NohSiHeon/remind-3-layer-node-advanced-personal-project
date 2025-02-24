@@ -9,7 +9,7 @@ class ApplyRepository {
 
 	applyJobPosting = async (userId, resumeId, jobPostingId) => {
 		return await this.prisma.$transaction(async (tx) => {
-			const existingApply = await this.findApply(tx, userId, jobPostingId);
+			const existingApply = await this.findApplyByUserIdAndJobPostingIdUsingTx(tx, userId, jobPostingId);
 
 			if (existingApply) {
 				throw new HttpError.Conflict(MESSAGES.APPLIES.COMMON.ALREADY_APPLIED);
@@ -22,7 +22,7 @@ class ApplyRepository {
 		})
 	}
 
-	findApply = async (tx, userId, jobPostingId) => {
+	findApplyByUserIdAndJobPostingIdUsingTx = async (tx, userId, jobPostingId) => {
 		const apply = await tx.apply.findUnique({
 			where: {
 				userId_jobPostingId: {
@@ -129,6 +129,41 @@ class ApplyRepository {
 				jobPosting: {
 					select: { recruiterId: true }
 				}
+			}
+		});
+
+		return apply;
+	}
+
+	cancelApplyJobPosting = async (userId, id) => {
+		return await this.prisma.$transaction(async (tx) => {
+			const apply = await this.findApplyByUserIdAndApplyIdUsingTx(tx, userId, id);
+			if (!apply) {
+				throw new HttpError.NotFound(MESSAGES.APPLIES.COMMON.NOT_FOUND);
+			}
+			const cancelApply = await this.deleteApply(tx, userId, id);
+			await this.jobPostingRepository.decrementApplicantCount(tx, cancelApply.jobPostingId);
+
+			return cancelApply.id;
+		});
+	}
+
+	findApplyByUserIdAndApplyIdUsingTx = async (tx, userId, id) => {
+		const apply = await tx.apply.findUnique({
+			where: {
+				userId: +userId,
+				id: +id
+			}
+		});
+
+		return apply;
+	}
+
+	deleteApply = async (tx, userId, id) => {
+		const apply = await tx.apply.delete({
+			where: {
+				userId: +userId,
+				id: +id
 			}
 		});
 

@@ -76,6 +76,24 @@ class ApplyController {
 			next(error);
 		}
 	}
+
+	cancelApplyJobPosting = async (req, res, next) => {
+		try {
+			const { id } = req.params;
+			const user = req.user;
+			const userId = user.id;
+
+			const data = await this.applyService.cancelApplyJobPosting(userId, id);
+
+			return res.status(HTTP_STATUS.OK).json({
+				status: HTTP_STATUS.OK,
+				message: MESSAGES.APPLIES.DELETE.SUCCEED,
+				data
+			})
+		} catch (error) {
+			next(error);
+		}
+	}
 }
 
 export { ApplyController };
