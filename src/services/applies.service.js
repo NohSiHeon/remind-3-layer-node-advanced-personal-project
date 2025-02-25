@@ -1,3 +1,5 @@
+import { transporter } from "../configs/mail.config.js";
+import { NODE_MAILER_USER } from "../constants/env.constant.js";
 import { MESSAGES } from "../constants/message.constant.js";
 import { HttpError } from "../errors/http.error.js";
 
@@ -10,6 +12,7 @@ class ApplyService {
 
 	applyJobPosting = async (userId, resumeId, jobPostingId) => {
 		const resume = await this.resumeRepository.findResumeByIdAndAuthorId(resumeId, userId);
+
 		if (!resume) {
 			throw new HttpError.NotFound(MESSAGES.RESUMES.COMMON.NOT_FOUND);
 		}
@@ -20,7 +23,6 @@ class ApplyService {
 		}
 
 		const apply = await this.applyRepository.applyJobPosting(userId, resumeId, jobPostingId);
-
 		return apply;
 	}
 
@@ -61,7 +63,7 @@ class ApplyService {
 		}
 
 		const updateStatusApply = await this.applyRepository.updateStatus(userId, id, status);
-
+		await this.sendMail(updateStatusApply.user.email, updateStatusApply.jobPosting.title);
 		return updateStatusApply;
 	}
 
@@ -75,6 +77,15 @@ class ApplyService {
 		const cancelApply = await this.applyRepository.cancelApplyJobPosting(userId, id);
 
 		return cancelApply;
+	}
+
+	sendMail = async (email, jobPostingTitle,) => {
+		await transporter.sendMail({
+			from: NODE_MAILER_USER,
+			to: email,
+			subject: `${jobPostingTitle} 채용 상태 업데이트 안내`,
+			text: `${jobPostingTitle}에대한 귀하의 지원 상태가 업데이트 되었습니다. 확인 부탁드립니다.`
+		});
 	}
 }
 

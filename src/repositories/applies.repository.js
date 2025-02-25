@@ -127,7 +127,13 @@ class ApplyRepository {
 			},
 			include: {
 				jobPosting: {
-					select: { recruiterId: true }
+					select: {
+						recruiterId: true,
+						title: true
+					}
+				},
+				user: {
+					select: { email: true }
 				}
 			}
 		});

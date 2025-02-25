@@ -67,11 +67,12 @@ class ApplyController {
 			const userId = user.id;
 
 			const data = await this.applyService.updateStatus(userId, id, status);
+
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,
 				message: MESSAGES.APPLIES.UPDATE.SUCCEED,
 				data
-			})
+			});
 		} catch (error) {
 			next(error);
 		}

@@ -16,3 +16,6 @@ export const REDIS_HOSTNAME = process.env.REDIS_HOSTNAME;
 export const REDIS_PORT = process.env.REDIS_PORT;
 export const REDIS_USERNAME = process.env.REDIS_USERNAME;
 export const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
+export const NODE_MAILER_SERVICE = process.env.NODE_MAILER_SERVICE;
+export const NODE_MAILER_USER = process.env.NODE_MAILER_USER;
+export const NODE_MAILER_PASS = process.env.NODE_MAILER_PASS;
