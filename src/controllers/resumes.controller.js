@@ -31,14 +31,17 @@ class ResumeController {
 			const role = user.role;
 			const authorId = user.id;
 			let { sort } = req.query;
+			const { page, limit } = req.query;
 
 			sort = sort?.toLowerCase();
+			const skip = (page - 1) * limit;
+
 
 			if (sort !== 'desc' && sort !== 'asc') {
 				sort = 'desc';
 			}
 
-			const data = await this.resumeService.getResumes(authorId, role, sort);
+			const data = await this.resumeService.getResumes(authorId, role, sort, skip, limit);
 
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,

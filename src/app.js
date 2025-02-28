@@ -5,12 +5,19 @@ import { HTTP_STATUS } from './constants/http-status.constant.js';
 import { apiRouter } from './routers/index.js';
 import session from 'express-session';
 import { connectRedis } from './configs/redis.config.js';
+import cors from 'cors';
 
 const app = express();
 connectRedis();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+	origin: 'http://127.0.0.1:5500', // Live Server 주소
+	methods: ['GET', 'POST', 'PATCH'], // 허용할 HTTP 메서드
+	credentials: true // 쿠키, 인증정보 필요시 true
+}));
+
 app.use(session({
 	secret: SESSION_SECRET,
 	resave: false,

@@ -12,13 +12,13 @@ class ResumeService {
 		return resume;
 	}
 
-	getResumes = async (authorId, role, sort) => {
+	getResumes = async (authorId, role, sort, skip, limit) => {
 		let resumes;
 
 		if (role == 'APPLICANT') {
-			resumes = await this.resumeRepository.findResumesByAuthorIdForApplicant(authorId, sort);
+			resumes = await this.resumeRepository.findResumesByAuthorIdForApplicant(authorId, sort, skip, limit);
 		} else if (role == 'RECRUITER') {
-			resumes = await this.resumeRepository.findResumesByAuthorIdForRecruiter(authorId, sort);
+			resumes = await this.resumeRepository.findResumesByAuthorIdForRecruiter(authorId, sort, skip, limit);
 		}
 
 		if (!resumes) {

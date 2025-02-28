@@ -1,4 +1,5 @@
 import { transporter } from "../configs/mail.config.js";
+import { sse } from "../configs/sse.config.js";
 import { NODE_MAILER_USER } from "../constants/env.constant.js";
 import { MESSAGES } from "../constants/message.constant.js";
 import { HttpError } from "../errors/http.error.js";
@@ -64,6 +65,7 @@ class ApplyService {
 
 		const updateStatusApply = await this.applyRepository.updateStatus(userId, id, status);
 		await this.sendMail(updateStatusApply.user.email, updateStatusApply.jobPosting.title);
+		await sse.send({ message: '지원상태가 변경되었습니다.', status: updateStatusApply.status });
 		return updateStatusApply;
 	}
 

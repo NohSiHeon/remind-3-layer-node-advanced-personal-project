@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSE 테스트</title>
+  </head>
+  <body>
+    <h1>SSE 알림 테스트</h1>
+    <div id="notifications"></div>
+
+    <script>
+      // SSE 연결
+      const eventSource = new EventSource('http://localhost:3000/api/events');
+
+      // 메시지 수신 시 실행
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        const notificationsDiv = document.getElementById('notifications');
+
+        const message = document.createElement('p');
+        message.textContent = `📢 ${data.message} (상태: ${data.status})`;
+        notificationsDiv.appendChild(message);
+      };
+
+      // 연결 오류 시 실행
+      eventSource.onerror = (error) => {
+        console.error('SSE 연결 오류:', error);
+        eventSource.close();
+      };
+    </script>
+  </body>
+</html>

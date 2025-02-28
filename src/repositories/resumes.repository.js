@@ -14,8 +14,10 @@ class ResumesRepository {
 
 		return resume;
 	}
-	findResumesByAuthorIdForApplicant = async (authorId, sort) => {
+	findResumesByAuthorIdForApplicant = async (authorId, sort, skip, limit) => {
 		let resumes = await this.prisma.resume.findMany({
+			skip: +skip,
+			take: +limit,
 			where: { authorId },
 			orderBy: {
 				createdAt: sort,
@@ -28,8 +30,10 @@ class ResumesRepository {
 		return resumes;
 	}
 
-	findResumesByAuthorIdForRecruiter = async (authorId, sort) => {
+	findResumesByAuthorIdForRecruiter = async (authorId, sort, skip, limit) => {
 		let resumes = await this.prisma.resume.findMany({
+			skip: skip,
+			take: limit,
 			where: { isPublic: 'TRUE' },
 			orderBy: {
 				createdAt: sort,
