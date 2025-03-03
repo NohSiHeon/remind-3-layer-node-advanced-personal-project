@@ -32,8 +32,8 @@ class ResumesRepository {
 
 	findResumesByAuthorIdForRecruiter = async (authorId, sort, skip, limit) => {
 		let resumes = await this.prisma.resume.findMany({
-			skip: skip,
-			take: limit,
+			skip: +skip,
+			take: +limit,
 			where: { isPublic: 'TRUE' },
 			orderBy: {
 				createdAt: sort,

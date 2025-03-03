@@ -37,9 +37,7 @@ class ResumeController {
 			const skip = (page - 1) * limit;
 
 
-			if (sort !== 'desc' && sort !== 'asc') {
-				sort = 'desc';
-			}
+			if (!sort) sort = 'desc';
 
 			const data = await this.resumeService.getResumes(authorId, role, sort, skip, limit);
 

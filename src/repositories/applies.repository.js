@@ -58,18 +58,25 @@ class ApplyRepository {
 		return apply;
 	}
 
-	findAppliesByUserIdForApplicant = async (userId) => {
+	findAppliesByUserIdForApplicant = async (userId, sort, skip, limit) => {
 		const applies = await this.prisma.apply.findMany({
+			skip: +skip,
+			limit: +limit,
 			where: {
 				userId: +userId
+			},
+			orderBy: {
+				createdAt: sort
 			}
 		});
 
 		return applies;
 	}
 
-	findAppliesByUserIdForRecruiter = async (userId) => {
+	findAppliesByUserIdForRecruiter = async (userId, sort, skip, limit) => {
 		const applies = await this.prisma.apply.findMany({
+			skip: +skip,
+			limit: +limit,
 			where: {
 				jobPosting: {
 					recruiterId: +userId
@@ -79,6 +86,9 @@ class ApplyRepository {
 				jobPosting: {
 					select: { recruiterId: true }
 				}
+			},
+			orderBy: {
+				createdAt: sort
 			}
 		});
 

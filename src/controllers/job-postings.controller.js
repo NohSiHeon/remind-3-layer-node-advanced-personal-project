@@ -42,8 +42,12 @@ class JobPostingController {
 	getJobPostings = async (req, res, next) => {
 		try {
 			let { sort } = req.query;
+			sort = sort?.toLowerCase();
+			if (!sort) sort = 'desc';
+			const { page, limit } = req.query;
+			const skip = (page - 1) * limit;
 
-			const data = await this.jobPostingService.getJobPostings(sort);
+			const data = await this.jobPostingService.getJobPostings(sort, skip, limit);
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,
 				message: MESSAGES.JOB_POSTINGS.READ_LIST.SUCCEED,

@@ -28,8 +28,10 @@ class JobPostingRepository {
 		return jobPosting;
 	}
 
-	findJobPostings = async (sort) => {
+	findJobPostings = async (sort, skip, limit) => {
 		const jobPostings = await this.prisma.jobPosting.findMany({
+			skip: +skip,
+			take: +limit,
 			orderBy: {
 				createdAt: sort
 			}

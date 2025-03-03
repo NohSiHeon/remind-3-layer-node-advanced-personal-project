@@ -26,11 +26,16 @@ class ApplyController {
 
 	getApplies = async (req, res, next) => {
 		try {
+			const { page, limit } = req.query;
+			const skip = (page - 1) * limit;
+			let { sort } = req.query;
+			sort = sort?.toLowerCase();
+			if (!sort) sort = 'desc';
 			const user = req.user;
 			const userId = user.id;
 			const userRole = user.role;
 
-			const data = await this.applyService.getApplies(userId, userRole);
+			const data = await this.applyService.getApplies(userId, userRole, sort, skip, limit);
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,
 				message: MESSAGES.APPLIES.READ_LIST.SUCCEED,

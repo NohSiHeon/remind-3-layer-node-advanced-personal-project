@@ -27,16 +27,16 @@ class ApplyService {
 		return apply;
 	}
 
-	getApplies = async (userId, userRole) => {
+	getApplies = async (userId, userRole, sort, skip, limit) => {
 		if (userRole == 'APPLICANT') {
-			const applies = await this.applyRepository.findAppliesByUserIdForApplicant(userId);
+			const applies = await this.applyRepository.findAppliesByUserIdForApplicant(userId, sort, skip, limit);
 			if (!applies) {
 				throw new HttpError.NotFound(MESSAGES.APPLIES.COMMON.NOT_FOUND);
 			}
 			return applies;
 		}
 
-		const applies = await this.applyRepository.findAppliesByUserIdForRecruiter(userId);
+		const applies = await this.applyRepository.findAppliesByUserIdForRecruiter(userId, sort, skip, limit);
 
 		if (!applies) {
 			throw new HttpError.NotFound(MESSAGES.APPLIES.COMMON.NOT_FOUND);

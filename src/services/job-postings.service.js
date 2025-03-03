@@ -23,12 +23,8 @@ class JobPostingService {
 		return jobPosting;
 	}
 
-	getJobPostings = async (sort) => {
-		if (!sort) {
-			sort = 'desc';
-		}
-
-		const jobPostings = await this.jobPostingRepository.findJobPostings(sort);
+	getJobPostings = async (sort, skip, limit) => {
+		const jobPostings = await this.jobPostingRepository.findJobPostings(sort, skip, limit);
 
 		if (!jobPostings) {
 			throw new HttpError.NotFound(MESSAGES.JOB_POSTINGS.COMMON.NOT_FOUND);
