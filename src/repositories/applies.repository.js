@@ -61,7 +61,7 @@ class ApplyRepository {
 	findAppliesByUserIdForApplicant = async (userId, sort, skip, limit) => {
 		const applies = await this.prisma.apply.findMany({
 			skip: +skip,
-			limit: +limit,
+			take: +limit,
 			where: {
 				userId: +userId
 			},
@@ -76,7 +76,7 @@ class ApplyRepository {
 	findAppliesByUserIdForRecruiter = async (userId, sort, skip, limit) => {
 		const applies = await this.prisma.apply.findMany({
 			skip: +skip,
-			limit: +limit,
+			take: +limit,
 			where: {
 				jobPosting: {
 					recruiterId: +userId
