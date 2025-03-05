@@ -47,7 +47,7 @@ class JobPostingController {
 			const { page, limit } = req.query;
 			const skip = (page - 1) * limit;
 
-			const data = await this.jobPostingService.getJobPostings(sort, skip, limit);
+			const data = await this.jobPostingService.getJobPostings(sort, page, skip, limit);
 			return res.status(HTTP_STATUS.OK).json({
 				status: HTTP_STATUS.OK,
 				message: MESSAGES.JOB_POSTINGS.READ_LIST.SUCCEED,

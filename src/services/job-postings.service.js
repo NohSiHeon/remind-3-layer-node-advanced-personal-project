@@ -2,8 +2,9 @@ import { MESSAGES } from "../constants/message.constant.js";
 import { HttpError } from "../errors/http.error.js";
 
 class JobPostingService {
-	constructor(jobPostingRepository) {
+	constructor(jobPostingRepository, redisClient) {
 		this.jobPostingRepository = jobPostingRepository;
+		this.redisClient = redisClient;
 	}
 
 	createJobPosting = async (recruiterId, title, name, location, salary, jobType, description) => {
@@ -23,9 +24,14 @@ class JobPostingService {
 		return jobPosting;
 	}
 
-	getJobPostings = async (sort, skip, limit) => {
-		const jobPostings = await this.jobPostingRepository.findJobPostings(sort, skip, limit);
+	getJobPostings = async (sort, page, skip, limit) => {
+		const cachedPostings = await this.redisClient.get(`jobPostings?sort=${sort}&page=${page}&limit=${limit}`);
+		if (cachedPostings) {
+			return JSON.parse(cachedPostings);
+		}
 
+		const jobPostings = await this.jobPostingRepository.findJobPostings(sort, skip, limit);
+		await this.redisClient.set(`jobPostings?sort=${sort}&page=${page}&limit=${limit}`, JSON.stringify(jobPostings), { EX: 600 });
 		if (!jobPostings) {
 			throw new HttpError.NotFound(MESSAGES.JOB_POSTINGS.COMMON.NOT_FOUND);
 		}
